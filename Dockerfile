@@ -13,16 +13,30 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     linux-headers-generic \
     git \
+    vim \
     autoconf \
     automake \
     libtool \
     pkg-config \
     scdoc \
+    libzstd-dev \
+    liblzma-dev \
+    zlib1g-dev \
+    libssl-dev \
+    gtk-doc-tools \
+    libglib2.0-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY kmod /usr/src/kmod
 WORKDIR /usr/src/kmod
-RUN ./autogen.sh && ./configure && make
-RUN make install
+
+RUN ./autogen.sh xg
+RUN ./configure CFLAGS='-g -O2' \
+    LDFLAGS='-ldl' --prefix=/usr \
+    --sysconfdir=/etc --libdir=/usr/lib \
+    --enable-debug --enable-gtk-doc \
+    --with-zstd --with-xz --with-zlib \
+    --with-openssl
+RUN make && make install
 
 CMD ["/bin/bash"]
