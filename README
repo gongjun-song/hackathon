@@ -1,8 +1,0 @@
-# Build kmod docker image
-docker build -t kmod-image .
-
-# Run docker container
-docker run --privileged -it --name kmod-container kmod-image
-
-# Stop&remove the container
-docker stop kmod-container && docker rm kmod-container

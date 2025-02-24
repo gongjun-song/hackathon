@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG http_proxy='http://proxy-dmz.intel.com:912'
 ARG https_proxy='http://proxy-dmz.intel.com:912'
@@ -11,9 +11,11 @@ RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    linux-headers-generic \
+    linux-headers-$(uname -r) \
+    meson \
     git \
     vim \
+    zstd \
     autoconf \
     automake \
     libtool \
@@ -22,6 +24,10 @@ RUN apt-get update && apt-get install -y \
     libzstd-dev \
     liblzma-dev \
     zlib1g-dev \
+    libncurses-dev \
+    bison \
+    flex \
+    libelf-dev \
     libssl-dev \
     gtk-doc-tools \
     libglib2.0-dev \
@@ -30,13 +36,5 @@ RUN apt-get update && apt-get install -y \
 COPY kmod /usr/src/kmod
 WORKDIR /usr/src/kmod
 
-RUN ./autogen.sh xg
-RUN ./configure CFLAGS='-g -O2' \
-    LDFLAGS='-ldl' --prefix=/usr \
-    --sysconfdir=/etc --libdir=/usr/lib \
-    --enable-debug --enable-gtk-doc \
-    --with-zstd --with-xz --with-zlib \
-    --with-openssl
-RUN make && make install
-
 CMD ["/bin/bash"]
+
